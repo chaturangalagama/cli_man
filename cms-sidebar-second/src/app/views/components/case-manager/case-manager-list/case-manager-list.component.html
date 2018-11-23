@@ -1,0 +1,151 @@
+<div class="col-12 case-background">
+
+  <div class="case-card-header row justify-content-end">
+    <div class="col-4 align-self-end pr-3">
+      <button class="btn btn-pink pl-4 pr-4  float-right" (click)="addPatient()"> Create New Case </button>
+    </div>
+  </div>
+
+  <div class="case-card-search row">
+    <div class="container-fluid">
+      <alert></alert>
+
+      <div class="col-8">
+        <h5 class="p-2">Search Cases</h5>
+      </div>
+
+      <hr class="case-hr">
+
+      <div class="row justify-content pb-3">
+        <div class="col-1 pt-2 pr-2" style="text-align:right">
+          <span>Case ID</span>
+        </div>
+        <div class="col-1 pl-0">
+          <input class="form-control form-control-sm" type="text" (keyup)="updateFilter($event , 'name')" />
+        </div>
+
+        <div class="col-1 pt-2 pr-2" style="text-align:right">
+          <span>Name</span>
+        </div>
+        <div class="col-1 pl-0">
+          <input class="form-control form-control-sm" type="text" (keyup)="updateFilter($event , 'name')" />
+        </div>
+
+        <div class="col-1 pt-2 pr-2" style="text-align:right">
+          <span>NRIC</span>
+        </div>
+        <div class="col-1 pl-0">
+          <input class="form-control form-control-sm" type="text" (keyup)="updateFilter($event , 'name')" />
+        </div>
+
+        <div class="col-1 pt-2 pr-2" style="text-align:right">
+            <span>Date Range</span>
+          </div>
+
+        <div class="col-1">
+          <input class="form-control form-control-sm" bsDatepicker placement="left" [bsConfig]="{dateInputFormat:'DD-MM-YYYY',containerClass: 'theme-blue'}"
+            formControlName="startDate">
+        </div>
+
+        <div class="col-1 pt-2 pr-2" style="text-align:right">
+            <span>To</span>
+          </div>
+
+        <div class="col-1">
+          <input class="form-control form-control-sm" bsDatepicker placement="left" [bsConfig]="{dateInputFormat:'DD-MM-YYYY',containerClass: 'theme-blue'}"
+            formControlName="endDate">
+        </div>
+
+        <div class="col-1 pt-2 pr-2" style="text-align:right">
+            <span class="icon-filter filter-icon"></span>
+            <span>Status</span>
+          </div>
+  
+          <div class="col-1 pl-0">
+            <ng-select class="p-0 form-control form-control-sm custom-select" [items]="statusFilterDropdown.value"
+              placeholder="Any" value="" bindLabel="label" bindValue="value" [clearable]='false' [virtualScroll]="true"
+              style="position: absolute;top: 0px;" (change)="updateFilter($event , 'status')">
+            </ng-select>
+          </div>
+      </div>
+    </div>
+
+    <div class="col-12 row justify-content-end">
+      <div class="col-4 align-self-end">
+        <button class="btn btn-pink pl-4 pr-4  float-right" (click)="addPatient()"> Search Cases </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="case-card-search row">
+    <div class="container-fluid" style="padding-top: 15px; padding-bottom: 5px;">
+
+      <ngx-datatable #table class='bootstrap custom-datatable expandable' [columns]="columns" [columnMode]="caseManagerExpand()"
+        [headerHeight]="40" [footerHeight]="40" [rowHeight]="40" [rowClass]='getRowClass' [rows]='rows' [limit]="pageLimit">
+        <ngx-datatable-column name="Date" prop="date" minWidth="inherit" [canAutoResize]=true [flexGrow]=2>
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <div>{{ row.date }}</div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Case ID" prop="caseId" [canAutoResize]=true minWidth="inherit" [flexGrow]=2>
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <div>
+              <a [title]="row.caseId" href="" class="font-weight-semi-bold" (click)='redirectToPatientDetail(row.patientid, row.name)'>
+                {{ row.caseId }}
+              </a>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="NRIC" prop="nric" minWidth="inherit" [canAutoResize]=true [flexGrow]=2>
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <div [title]="row.nirc">{{ row.nric }}</div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Name" prop="name" minWidth="inherit" [flexGrow]=1.5 headerClass="headerAlignCenter"
+          [canAutoResize]=true>
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <div [title]="row.name" class="centerContent">{{ row.name }}</div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Amt Charged($)" prop="amtCharged" minWidth="inherit" [flexGrow]=2 headerClass="headerAlignCenter"
+          [canAutoResize]=true>
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <div [title]="row.amtCharged" class="centerContent">{{ row.amtCharged }}</div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Number of Visits" prop="noOfVisits" minWidth="inherit" [flexGrow]=2 headerClass="headerAlignCenter"
+          [canAutoResize]=true>
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <div [title]="row.noOfVisits" class="centerContent">{{ row.noOfVisits }}</div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name=" Status" prop="status" minWidth="inherit" [flexGrow]=2 headerClass="headerAlignCenter"
+          [canAutoResize]=true>
+          <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
+            <div [title]="row.status" class="centerContent">
+              <button [class]="buttonIsDisabled(value)" (click)="redirectToNextPage(row.status, row.patientid,row.patientRegistryId, row.consultationId)">
+                {{ row.status === "POST_CONSULT" ? "POST CONSULT" : row.status }}
+              </button>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Action " prop="action" minWidth="inherit" [flexGrow]=2 [canAutoResize]=true>
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <div class="btn-group btn-group-sm " dropdown container="body" [autoClose]="true">
+              <button class="btn btn-outline-dark dropdown-toggle" value="value " dropdownToggle aria-controls="dropdown-basic">Actions</button>
+              <ul id="basic-link-dropdown" *dropdownMenu class="dropdown-menu dropdown-menu-right p-2" role="menu "
+                aria-labelledby="basic-link" (click)="preventClose($event)">
+                <li *ngFor="let choice of actionList">
+                  <input type="radio" id="{{choice}}" name="{{choice}}" value="{{choice}}" [(ngModel)]="selectedAction">
+                  <label class='text-dark' for="{{choice}}">{{choice}}</label>
+                </li>
+                <div class="divider dropdown-divider "></div>
+                <button class="btn btn-sm btn-peacock-blue " (click)="btnActionProceed(row) ">Proceed</button>
+              </ul>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+</div>
